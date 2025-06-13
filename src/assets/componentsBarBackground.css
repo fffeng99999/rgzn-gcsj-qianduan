@@ -1,0 +1,66 @@
+/*
+ * src/assets/componentsBarBackground.css
+ *
+ * 遵从 body.dark-theme 模式进行主题切换
+ */
+
+
+/* 输入框颜色管理*/
+/* 默认 (亮色主题) */
+:root {
+    /**
+     * @description 输入框背景色 - 灰白色
+     */
+    --inputbar-bg: rgb(240, 242, 245);
+
+    /**
+     * @description 边框颜色
+     */
+    --border-color: #e0e0e0;
+
+    /**
+     * @description 组件阴影
+     */
+    /*--component-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);*/
+}
+
+/* 暗色主题 */
+body.dark-theme {
+    /**
+     * @description 输入框背景色 - 灰色
+     */
+    --inputbar-bg: #2c2c2e;
+
+    /**
+     * @description 边框颜色
+     */
+    --border-color: #3a3a3a;
+
+    /**
+     * @description 组件阴影
+     */
+    /*--component-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);*/
+}
+
+
+/* 图片框颜色管理*/
+:root {
+
+    --card-color-imgpv-bg: rgb(240, 242, 245);
+
+}
+
+/* 暗色主题 */
+body.dark-theme {
+
+    --card-color-imgpv-bg:#2c2c2e
+}
+
+/* 控制框颜色管理*/
+:root {
+    --card-color-cpl-ng: rgb(240, 242, 245);
+}
+
+body.dark-theme {
+    --card-color-cpl-ng: #2c2c2e;
+}
