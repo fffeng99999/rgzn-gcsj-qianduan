@@ -12,7 +12,7 @@ const routes = [
         path: '/demo',
         name: 'demo',
         // ✨ 修改：将 /demo 路由指向 Demo.vue，以便直接测试
-        component: () => import('@/views/Demo-test5-refresh4.vue')
+        component: () => import('@/views/Demo-test5-final.vue')
     },
     // {
     //     path: '/enhance',

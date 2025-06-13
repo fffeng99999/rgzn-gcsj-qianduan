@@ -1,4 +1,4 @@
-// src/components/ControlPanel3.vue
+// src/components/ControlPanel4.vue
 
 <template>
   <div class="control-panel-container">

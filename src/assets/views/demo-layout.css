@@ -1,36 +1,77 @@
 /* src/assets/views/demo-layout.css */
 
-/* 页面主容器样式 */
+/* ✨ 新增 left-panel-container 样式，使其可以容纳绝对定位的按钮 */
+.left-panel-container {
+    position: relative;
+}
+
+/* ✨ 将切换按钮样式应用到左侧面板 */
+.view-toggle-button {
+    position: absolute;
+    bottom: 16px;
+    left: 32px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(5px);
+    --n-border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
 .demo-page-container {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    width: 100%;
     height: 100%;
-    box-sizing: border-box;
+    background-color: var(--n-color);
 }
 
-/* 内容区域样式 */
 .chat-content-area {
     flex-grow: 1;
-    overflow-y: auto;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-in-out;
 }
 
-/* 上传前占位符的样式 */
+.chat-content-area.side-by-side {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.image-preview-item {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: width 0.5s ease-in-out, opacity 0.3s ease;
+}
+
+.chat-content-area.side-by-side .image-preview-item {
+    width: 50%;
+    border-left: 1px solid var(--n-border-color);
+}
+.chat-content-area.side-by-side .image-preview-item:first-child {
+    border-left: none;
+}
+
 .placeholder-box {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     padding: 24px;
+    width: 100%;
+    height: 100%;
 }
 
 .placeholder-content {
     width: 100%;
     max-width: 900px;
-    height: 65vh;
+    height: 80vh;
     max-height: 600px;
     border: 2px dashed var(--n-border-color);
     border-radius: 16px;
@@ -41,22 +82,27 @@
     gap: 16px;
 }
 
-/* 控制面板包装容器的样式 */
 .controls-wrapper {
     flex-shrink: 0;
-    padding: 16px 24px 0 24px;
+    padding: 16px 24px 16px 24px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
 }
 
-/* 输入栏包装容器样式 */
 .input-wrapper {
     flex-shrink: 0;
-    padding: 16px 24px 24px 24px;
+    padding: 8px 24px 24px 24px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--n-color);
 }
 
-/* Vue 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s ease;
+    transition: opacity 0.3s ease;
 }
 
 .fade-enter-from,
@@ -75,16 +121,10 @@
     transform: translateY(20px);
 }
 
-
-
-/* 新增：向下滑动动画 */
-.slide-down-enter-active,
-.slide-down-leave-active {
-    transition: all 0.5s ease;
+.slide-in-right-enter-active {
+    transition: transform 0.5s ease-out;
 }
 
-.slide-down-enter-from,
-.slide-down-leave-to {
-    opacity: 0;
-    transform: translateY(-20px); /* 关键改动：从上方 20px 处开始 */
+.slide-in-right-enter-from {
+    transform: translateX(100%);
 }
