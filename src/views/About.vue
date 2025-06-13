@@ -1,3 +1,5 @@
+// src/views/About.vue
+
 <template>
   <n-space vertical size="large">
     <n-space>

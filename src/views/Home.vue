@@ -1,3 +1,5 @@
+// src/views/Home.vue
+
 <template>
   <n-space vertical :size="24">
     <n-card>
