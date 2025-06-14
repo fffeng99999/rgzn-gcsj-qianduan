@@ -93,8 +93,8 @@ const placeholderText = computed(() => {
     return '请先上传图片...';
   }
   return props.selectedSteps.includes('step3')
-      ? '输入提示词 (可选)...'
-      : '无需输入文字，可直接点击右侧按钮提交处理';
+      ? '输入提示词...'
+      : '“语义增强”未开启，可直接点击右侧按钮提交处理';
 });
 
 const handleSend = () => {
