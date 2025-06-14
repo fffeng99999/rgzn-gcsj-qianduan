@@ -1,4 +1,5 @@
-/* ✨ 4. 样式与您提供的 ImagePreview.vue 完全一致，仅增加下载按钮的样式 */
+/*src/assets/components/ImagePreviewResult.css*/
+
 .image-preview-wrapper {
     flex-grow: 1;
     width: 100%;

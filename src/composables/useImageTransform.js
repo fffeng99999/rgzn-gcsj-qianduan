@@ -1,3 +1,5 @@
+// src/composables/useImageTransform.js
+
 import { reactive } from 'vue';
 
 // 创建一个响应式对象来存储变换状态

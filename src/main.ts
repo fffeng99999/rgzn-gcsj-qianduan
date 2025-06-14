@@ -1,4 +1,4 @@
-// src/main.ts (这是唯一需要保留的入口文件)
+// src/main.ts (唯一入口文件)
 
 import { createApp } from 'vue'
 

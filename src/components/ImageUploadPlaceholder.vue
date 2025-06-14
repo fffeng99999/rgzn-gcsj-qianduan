@@ -1,3 +1,5 @@
+// src/components/ImageUploadPlaceholder.vue
+
 <template>
   <div class="placeholder-box">
     <div class="placeholder-content">

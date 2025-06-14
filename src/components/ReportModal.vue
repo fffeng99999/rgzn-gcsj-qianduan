@@ -1,3 +1,5 @@
+// src/components/ReportModal.vue
+
 <template>
   <n-modal
       :show="show"
