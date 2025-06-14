@@ -1,0 +1,39 @@
+
+.image-preview-wrapper {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0;
+    animation: slide-up-fade-in 0.5s ease-out;
+}
+.image-preview-container {
+    width: 90%;
+    max-width: 900px;
+    height: 80vh;
+    max-height: 600px;
+    border: 1px solid var(--n-border-color);
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--card-color-imgpv-bg);
+    box-shadow: var(--component-shadow);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.preview-image {
+    border-radius: 8px;
+    cursor: grab;
+    transition: transform 0.2s ease-out;
+    transform-origin: center;
+}
+.preview-image.is-panning {
+    cursor: grabbing;
+}
+@keyframes slide-up-fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

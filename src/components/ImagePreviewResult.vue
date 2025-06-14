@@ -3,7 +3,8 @@
 <template>
   <div class="image-preview-wrapper">
     <div
-        ref="containerEl" class="image-preview-container"
+        ref="containerEl"
+        class="image-preview-container"
         @mousedown="handleMouseDown"
         @mousemove="handleMouseMove"
         @mouseup="handleMouseUp"
@@ -34,90 +35,111 @@
           :style="imageStyle"
           :class="{ 'is-panning': isPanning }"
           @wheel.prevent="handleWheel"
-          @dblclick="resetTransform"
-          @load="initializeImageTransform" />
+          @dblclick="handleDblClickReset"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-// ✨ 2. 新增：引入 NButton, NIcon, NTooltip 和下载图标
 import { ref, computed } from 'vue';
 import { NButton, NIcon, NTooltip } from 'naive-ui';
 import { DownloadOutline } from '@vicons/ionicons5';
+import { useImageTransform } from '@/composables/useImageTransform'; // ✨ 1. 引入共享的 Composable
+import '@/assets/components/ImagePreviewResult.css';
 
-// props 和 emits 定义与 ImagePreview.vue 完全一致
+// --- Props ---
+// ✨ 2. Props 中不再需要 transformState
 const props = defineProps({
   imageUrl: {
     type: String,
     required: true,
   },
-  transformState: {
-    type: Object,
-    required: true,
-    default: () => ({ scale: 1, translateX: 0, translateY: 0 })
-  },
 });
-const emit = defineEmits(['update:transform', 'initialized']);
 
-// --- 内部状态和变换逻辑与 ImagePreview.vue 完全相同 ---
+// --- Composables ---
+// ✨ 3. 和 ImagePreview.vue 一样，直接从 Composable 获取共享状态和方法
+const { transformState, updateTransform, resetTransform } = useImageTransform();
+
+// --- 内部状态（仅用于交互过程） ---
 const imageEl = ref(null);
 const containerEl = ref(null);
 const isPanning = ref(false);
 const startDrag = ref({ x: 0, y: 0 });
+
+// --- Computed ---
+// ✨ 4. 图像样式直接使用来自 Composable 的共享状态
 const imageStyle = computed(() => ({
-  transform: `scale(${props.transformState.scale}) translate(${props.transformState.translateX}px, ${props.transformState.translateY}px)`,
+  transform: `scale(${transformState.scale}) translate(${transformState.translateX}px, ${transformState.translateY}px)`,
 }));
-const initializeImageTransform = () => {
+
+// --- Methods ---
+// ✨ 5. 不再需要 emit 事件，而是直接调用 Composable 中的方法
+// 注意：此组件不需要 `initializeImageTransform`，因为状态由 ImagePreview 初始化。
+// 但我们保留重置逻辑，以便双击时能恢复视图。
+const reinitializeTransform = () => {
   if (!imageEl.value || !containerEl.value || !imageEl.value.naturalWidth) return;
   const { naturalWidth: imgWidth, naturalHeight: imgHeight } = imageEl.value;
   const { clientWidth: containerWidth, clientHeight: containerHeight } = containerEl.value;
   const scaleX = containerWidth / imgWidth;
   const scaleY = containerHeight / imgHeight;
   const newScale = Math.min(scaleX, scaleY);
-  emit('initialized', { scale: newScale, translateX: 0, translateY: 0 });
+  resetTransform({ scale: newScale, translateX: 0, translateY: 0 });
 };
+
 const handleWheel = (event) => {
   const scaleAmount = 0.1;
-  const currentScale = props.transformState.scale;
+  const currentScale = transformState.scale;
   const minScale = 0.2;
   const maxScale = 5;
+
   let newScale;
   if (event.deltaY > 0) {
     newScale = Math.max(minScale, currentScale - scaleAmount);
   } else {
     newScale = Math.min(maxScale, currentScale + scaleAmount);
   }
-  emit('update:transform', { ...props.transformState, scale: newScale });
+
+  updateTransform({ ...transformState, scale: newScale });
 };
+
 const handleMouseDown = (event) => {
   event.preventDefault();
   isPanning.value = true;
   startDrag.value = {
-    x: event.clientX - props.transformState.translateX * props.transformState.scale,
-    y: event.clientY - props.transformState.translateY * props.transformState.scale,
+    x: event.clientX - transformState.translateX * transformState.scale,
+    y: event.clientY - transformState.translateY * transformState.scale,
   };
 };
+
 const handleMouseMove = (event) => {
   if (isPanning.value) {
     event.preventDefault();
-    const newTranslateX = (event.clientX - startDrag.value.x) / props.transformState.scale;
-    const newTranslateY = (event.clientY - startDrag.value.y) / props.transformState.scale;
-    emit('update:transform', { ...props.transformState, translateX: newTranslateX, translateY: newTranslateY });
+    const newTranslateX = (event.clientX - startDrag.value.x) / transformState.scale;
+    const newTranslateY = (event.clientY - startDrag.value.y) / transformState.scale;
+    updateTransform({ ...transformState, translateX: newTranslateX, translateY: newTranslateY });
   }
 };
+
 const handleMouseUp = () => { isPanning.value = false; };
 const handleMouseLeave = () => { isPanning.value = false; };
-const resetTransform = () => {
-  emit('update:transform', { scale: 1, translateX: 0, translateY: 0 });
+
+const handleDblClickReset = () => {
+  reinitializeTransform();
 };
 
-// ✨ 3. 新增：下载图片的逻辑
+// --- 下载逻辑（此组件特有功能）---
 const handleDownload = () => {
   if (!props.imageUrl) return;
   const link = document.createElement('a');
   link.href = props.imageUrl;
-  const fileName = props.imageUrl.split('/').pop().split('#')[0].split('?')[0] || 'result.png';
+
+  // 尝试生成一个更有意义的文件名
+  const baseName = props.imageUrl.split('/').pop().split('#')[0].split('?')[0] || 'result';
+  const fileName = baseName.includes('.')
+      ? `${baseName.substring(0, baseName.lastIndexOf('.'))}_result.${baseName.substring(baseName.lastIndexOf('.') + 1)}`
+      : `${baseName}_result.png`;
+
   link.download = fileName;
   document.body.appendChild(link);
   link.click();
@@ -126,58 +148,5 @@ const handleDownload = () => {
 </script>
 
 <style scoped>
-/* ✨ 4. 样式与您提供的 ImagePreview.vue 完全一致，仅增加下载按钮的样式 */
-.image-preview-wrapper {
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 0;
-  animation: slide-up-fade-in 0.5s ease-out;
-}
-.image-preview-container {
-  width: 90%;
-  max-width: 900px;
-  height: 80vh;
-  max-height: 600px;
-  border: 1px solid var(--n-border-color);
-  border-radius: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  background-color: var(--card-color-imgpv-bg);
-  box-shadow: var(--component-shadow);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  position: relative; /* 为绝对定位的下载按钮提供上下文 */
-}
-.preview-image {
-  border-radius: 8px;
-  cursor: grab;
-  transition: transform 0.2s ease-out;
-  transform-origin: center;
-}
-.preview-image.is-panning {
-  cursor: grabbing;
-}
-@keyframes slide-up-fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ✨ 5. 新增：下载按钮的样式 */
-.download-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  font-size: 18px;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: white;
-}
-.download-btn:hover {
-  background-color: rgba(0, 0, 0, 0.4);
-}
+/* 样式可以保持不变 */
 </style>
