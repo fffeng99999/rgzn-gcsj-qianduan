@@ -61,7 +61,8 @@ import {
   NButton, NSpace, NH6, NCollapse, NCollapseItem, NInputNumber,
   NSwitch, NRadioGroup, NRadioButton, NText
 } from 'naive-ui';
-import { reactive } from 'vue';
+// ✨ 1. Import `watch` from 'vue' to observe changes
+import { reactive, watch } from 'vue';
 
 const props = defineProps({
   selectedSteps: {
@@ -74,7 +75,9 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:selectedSteps', 'show-report']);
+// ✨ 2. Add the new 'update:advancedSettings' event to the list of emits.
+// This formally declares that the component will send this event.
+const emit = defineEmits(['update:selectedSteps', 'show-report', 'update:advancedSettings']);
 
 const toggleStep = (stepValue) => {
   const stepsSet = new Set(props.selectedSteps);
@@ -97,9 +100,21 @@ const form = reactive({
   normalize: true,
   outputFormat: 'png'
 });
+
+// ✨ 3. Watch the 'form' object for any changes.
+// The `{ deep: true }` option ensures the watcher fires even for nested property changes.
+// When a change is detected, it emits the entire 'form' object to the parent component.
+watch(form, (newSettings) => {
+  emit('update:advancedSettings', newSettings);
+}, { deep: true });
+
+// ✨ 4. Emit the initial state of the form when the component is first set up.
+// This ensures the parent component has the default values from the start.
+emit('update:advancedSettings', form);
 </script>
 
 <style scoped>
+/* Your original styles are fully preserved */
 .control-panel-container {
   display: flex;
   flex-direction: column;
@@ -109,7 +124,7 @@ const form = reactive({
   border: 1px solid var(--border-color-control-panel);
   border-radius: 12px;
   box-shadow: var(--component-shadow);
-  max-width: 720px; /* ✨ 恢复此处的最大宽度限制，使其与 InputBar 长度一致 */
+  max-width: 720px;
   width: 100%;
   margin: 0 auto;
 }
