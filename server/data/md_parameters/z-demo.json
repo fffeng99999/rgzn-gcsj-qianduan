@@ -5,8 +5,8 @@
     "step3": true
   },
   "advancedParams": {
-    "scale": 8,
-    "baseChannels": 64,
+    "scale": 4,
+    "baseChannels": 128,
     "bilinear": true,
     "normalize": true,
     "outputFormat": "jpg"
