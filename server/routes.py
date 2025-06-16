@@ -7,6 +7,7 @@ import traceback
 from flask import Blueprint, request, jsonify, send_file, current_app, url_for
 from werkzeug.utils import secure_filename
 import utils  # 导入我们的工具函数
+import logger  # 导入新的 logger 模块
 
 # 创建一个蓝图对象
 api = Blueprint('api', __name__)
@@ -27,6 +28,10 @@ def process_image_api():
 
     try:
         metadata = json.loads(metadata_str)
+
+        # 调用专用的日志记录函数
+        logger.log_request_data(file.filename, metadata)
+
     except json.JSONDecodeError:
         return jsonify({'error': '元数据中的JSON格式无效'}), 400
 
