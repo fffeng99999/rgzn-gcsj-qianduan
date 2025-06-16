@@ -61,23 +61,35 @@ import {
   NButton, NSpace, NH6, NCollapse, NCollapseItem, NInputNumber,
   NSwitch, NRadioGroup, NRadioButton, NText
 } from 'naive-ui';
-// ✨ 1. Import `watch` from 'vue' to observe changes
-import { reactive, watch } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
 
 const props = defineProps({
-  selectedSteps: {
-    type: Array,
-    default: () => []
-  },
-  showReportButton: {
-    type: Boolean,
-    default: false
-  }
+  selectedSteps: { type: Array, default: () => [] },
+  advancedSettings: { type: Object, default: () => ({}) },
+  showReportButton: { type: Boolean, default: false }
 });
 
-// ✨ 2. Add the new 'update:advancedSettings' event to the list of emits.
-// This formally declares that the component will send this event.
 const emit = defineEmits(['update:selectedSteps', 'show-report', 'update:advancedSettings']);
+
+const form = reactive({
+  scale: 4,
+  baseChannels: 64,
+  bilinear: false,
+  normalize: true,
+  outputFormat: 'png'
+});
+
+// Watch for changes from the parent (e.g., model selection) and update the local form
+watch(() => props.advancedSettings, (newSettings) => {
+  if (newSettings) {
+    Object.assign(form, newSettings);
+  }
+}, { deep: true, immediate: true });
+
+// Watch for local user changes and emit them to the parent
+watch(form, (newSettings) => {
+  emit('update:advancedSettings', { ...newSettings });
+}, { deep: true });
 
 const toggleStep = (stepValue) => {
   const stepsSet = new Set(props.selectedSteps);
@@ -93,28 +105,13 @@ const toggleStep = (stepValue) => {
   emit('update:selectedSteps', Array.from(stepsSet));
 };
 
-const form = reactive({
-  scale: 4,
-  baseChannels: 64,
-  bilinear: false,
-  normalize: true,
-  outputFormat: 'png'
+onMounted(() => {
+  // Ensure the initial state is emitted
+  emit('update:advancedSettings', { ...form });
 });
-
-// ✨ 3. Watch the 'form' object for any changes.
-// The `{ deep: true }` option ensures the watcher fires even for nested property changes.
-// When a change is detected, it emits the entire 'form' object to the parent component.
-watch(form, (newSettings) => {
-  emit('update:advancedSettings', newSettings);
-}, { deep: true });
-
-// ✨ 4. Emit the initial state of the form when the component is first set up.
-// This ensures the parent component has the default values from the start.
-emit('update:advancedSettings', form);
 </script>
 
 <style scoped>
-/* Your original styles are fully preserved */
 .control-panel-container {
   display: flex;
   flex-direction: column;

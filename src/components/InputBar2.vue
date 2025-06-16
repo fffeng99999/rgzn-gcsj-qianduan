@@ -56,42 +56,17 @@ import { Add } from '@vicons/ionicons5';
 import { Send20Filled } from '@vicons/fluent';
 
 const props = defineProps({
-  selectedSteps: {
-    type: Array,
-    default: () => []
-  },
-  isImageUploaded: {
-    type: Boolean,
-    default: false
-  },
-  selectedModel: {
-    type: String,
-    default: null
-  },
-  // ✨ 2. Added a prop to receive the processing status from the parent component
-  isProcessing: {
-    type: Boolean,
-    default: false,
-  }
+  selectedSteps: { type: Array, default: () => [] },
+  isImageUploaded: { type: Boolean, default: false },
+  selectedModel: { type: String, default: null },
+  isProcessing: { type: Boolean, default: false },
+  modelOptions: { type: Array, default: () => [] } // Prop to receive model options
 });
 
-// ✨ 3. Removed 'start-processing' as it's no longer needed.
-// The parent component now controls the entire processing flow.
 const emit = defineEmits(['send', 'upload', 'update:selectedModel']);
 
 const inputValue = ref('');
 const message = useMessage();
-
-const modelOptions = ref([
-  {
-    label: "通用模型",
-    value: "unet_best.pth" // Make sure this value matches your backend model file
-  },
-  {
-    label: "动漫模型",
-    value: "RealESRGAN_x4plus_anime_6B.pth"
-  }
-]);
 
 const placeholderText = computed(() => {
   if (!props.isImageUploaded) {
@@ -103,7 +78,7 @@ const placeholderText = computed(() => {
 });
 
 const handleSend = () => {
-  if (props.isProcessing) return; // Extra safeguard
+  if (props.isProcessing) return;
 
   const isSemanticStepEnabled = props.selectedSteps.includes('step3');
 
@@ -112,8 +87,6 @@ const handleSend = () => {
     return;
   }
 
-  // The component's only job is to send the prompt value.
-  // The parent will handle the API call.
   emit('send', inputValue.value);
   inputValue.value = '';
 };
@@ -127,7 +100,7 @@ const handleKeydown = (event) => {
 </script>
 
 <style scoped>
-/* Your original styles are fully preserved */
+/* Styles remain unchanged */
 .input-bar-container {
   width: 100%;
   display: flex;
@@ -192,8 +165,3 @@ const handleKeydown = (event) => {
   font-size: 20px;
 }
 </style>
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 7a887e08bad3f67f5ba7643fee66ec61202038b4

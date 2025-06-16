@@ -184,9 +184,6 @@ def test_api():
     """一个简单的测试端点，用于确认API正在运行。"""
     current_app.logger.info('收到 /hello 请求')
     return jsonify({"message": "API服务正在运行"})
-<<<<<<< HEAD
-=======
-
 
 # --- NEW ROUTE: Fetch Model Parameters ---
 @main.route('/model-parameters/<model_name>', methods=['GET'])
@@ -204,17 +201,17 @@ def get_model_parameters(model_name):
         file_path = os.path.join(data_dir, f"{secure_model_name}.json")
 
         if not os.path.exists(file_path):
-            logger.warning(f"模型参数文件未找到: {file_path}")
+            # logger.warning(f"模型参数文件未找到: {file_path}")
             return jsonify({"error": "Model parameters not found"}), 404
 
         with open(file_path, 'r', encoding='utf-8') as f:
             parameters = json.load(f)
 
-        logger.info(f"成功加载模型参数: {model_name}")
+        # logger.info(f"成功加载模型参数: {model_name}")
         return jsonify(parameters), 200
 
     except Exception as e:
-        logger.error(f"获取模型参数时发生错误 {model_name}: {e}")
+        # logger.error(f"获取模型参数时发生错误 {model_name}: {e}")
         print(traceback.format_exc()) # 打印完整的堆栈跟踪以便调试
         return jsonify({"error": "Internal server error"}), 500
 
@@ -226,16 +223,15 @@ def list_models():
         data_dir = os.path.join(current_app.root_path, 'data', 'md_parameters')
         if not os.path.exists(data_dir):
             # 如果目录不存在，返回空列表而不是错误
-            logger.warning(f"模型参数目录不存在: {data_dir}")
+            # logger.warning(f"模型参数目录不存在: {data_dir}")
             return jsonify({"models": []}), 200
 
         model_files = [f for f in os.listdir(data_dir) if f.endswith('.json')]
         # 提取模型名称（不带 .json 扩展名）
         models = [os.path.splitext(f)[0] for f in model_files]
-        logger.info(f"列出可用模型: {models}")
+        # logger.info(f"列出可用模型: {models}")
         return jsonify({"models": models}), 200
     except Exception as e:
-        logger.error(f"列出模型时发生错误: {e}")
+        # logger.error(f"列出模型时发生错误: {e}")
         print(traceback.format_exc()) # 打印完整的堆栈跟踪以便调试
         return jsonify({"error": "Internal server error"}), 500
->>>>>>> 7a887e08bad3f67f5ba7643fee66ec61202038b4
