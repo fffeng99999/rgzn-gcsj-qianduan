@@ -1,7 +1,7 @@
 
 @echo off
 echo 启动后端 Flask 服务...
-start cmd /k python .\server\main.py
+start cmd /k python .\server\app.py
 
 echo 启动前端 Vue 项目...
 cd frontend
