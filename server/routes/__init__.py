@@ -1,9 +1,8 @@
-# routes/__init__.py
-# 暂时可以留空，或者用于统一导入所有路由蓝图
-
+# fffeng99999/rgzn-gcsj-qianduan/rgzn-gcsj-qianduan-1380fd747a3f68c1ae28cea72052197a6290bc74/server/routes/__init__.py
 from .api import api_bp
 from .image import image_bp
 from .test import test_bp
 
-# 可选：统一导出所有蓝图，main.py 中可以简化导入
-all_blueprints = [api_bp, image_bp, test_bp]
+# 使用 __all__ 明确声明可以从这个包导出哪些变量
+# 当其他文件使用 from server.routes import * 时，只会导入 api_bp, image_bp, test_bp
+__all__ = ['api_bp', 'image_bp', 'test_bp']
