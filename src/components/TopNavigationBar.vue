@@ -42,7 +42,7 @@
         <n-avatar
             round
             size="medium"
-            src="https://em-content.zobj.net/source/telegram/386/zany-face_1f92a.webp"
+            src="https://em-content.zobj.net/source/telegram/386/face-with-raised-eyebrow_1f928.webp"
             style="cursor: pointer;"
         />
       </n-dropdown>
