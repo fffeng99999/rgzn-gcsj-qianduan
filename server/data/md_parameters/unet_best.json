@@ -1,0 +1,16 @@
+{
+  "steps": {
+    "step1": true,
+    "step2": false,
+    "step3": false
+  },
+  "advancedParams": {
+    "scale": 4,
+    "baseChannels": 128,
+    "bilinear": true,
+    "normalize": true,
+    "outputFormat": "png"
+  },
+  "model": "unet_best.pth",
+  "prompt": ""
+}
