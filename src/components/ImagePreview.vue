@@ -42,7 +42,7 @@ const props = defineProps({
 
 // --- Composables ---
 // ✨ 3. 直接从 Composable 获取共享状态和方法
-const { transformState, updateTransform, resetTransform } = useImageTransform();
+const { transformState, updateTransform, resetTransform, initializeFit } = useImageTransform();
 
 // --- 内部状态（仅用于交互过程） ---
 const imageEl = ref(null);
@@ -59,6 +59,8 @@ const imageStyle = computed(() => ({
 // --- Methods ---
 // ✨ 5. 不再需要 emit 事件，而是直接调用 Composable 中的方法
 const initializeImageTransform = () => {
+  initializeFit({ fit: 'css' });
+
   if (!imageEl.value || !containerEl.value || !imageEl.value.naturalWidth) return;
 
   const { naturalWidth: imgWidth, naturalHeight: imgHeight } = imageEl.value;
