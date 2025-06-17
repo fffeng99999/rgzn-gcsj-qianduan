@@ -85,7 +85,7 @@ def generate_pdf_report(output_path, metrics, params):
         print(f"--- [调试] 正在加载字体文件于: {font_path}")
 
         # 在 add_font 方法中使用完整的字体路径
-        pdf.add_font('simsun', '', font_path, uni=True) # <--- 已修复
+        pdf.add_font('simsun', '', font_path, uni=True)
         pdf.set_font('simsun', '', 14)
     except Exception as e: # 建议捕获更具体的异常或所有异常以进行调试
         print(f"生成报告时出错: {e}")
