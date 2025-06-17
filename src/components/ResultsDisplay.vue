@@ -21,14 +21,8 @@
       <n-tab-pane name="metrics" tab="质量指标">
         <n-p depth="3">图像增强质量的量化评估指标。</n-p>
         <n-descriptions label-placement="left" bordered :column="1">
-          <n-descriptions-item label="PSNR (峰值信噪比)">
-            {{ metrics['PSNR (峰值信噪比)'] }}
-          </n-descriptions-item>
-          <n-descriptions-item label="SSIM (结构相似性指数)">
-            {{ metrics['SSIM (结构相似性指数)'] }}
-          </n-descriptions-item>
-          <n-descriptions-item label="CLIP-SCORE (语义相似度得分)">
-            {{ metrics['CLIP-SCORE (语义相似度得分)'] }}
+          <n-descriptions-item v-for="(value, key) in metrics" :key="key" :label="key">
+            {{ value }}
           </n-descriptions-item>
         </n-descriptions>
       </n-tab-pane>

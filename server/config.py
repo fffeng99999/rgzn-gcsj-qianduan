@@ -25,3 +25,5 @@ BASE_URL = "http://localhost:5000"
 
 # 日志目录
 LOG_FILE_PATH = os.path.join(BASE_DIR, 'log.json')
+
+USE_REAL_DATA = False
