@@ -44,12 +44,21 @@
     <input ref="fileInputRef" type="file" accept="image/*" style="display: none" @change="handleFileChange"/>
     <FileDropOverlay v-if="isDragging" />
 
+<!--    <ReportModal-->
+<!--        v-model:show="showReportModal"-->
+<!--        :selected-steps="selectedSteps"-->
+<!--        :comparison-images="reportData.comparisonImages"-->
+<!--        :gif-url="reportData.gifUrl"-->
+<!--        :metrics="reportData.metrics"-->
+<!--    />-->
     <ReportModal
+        v-if="fullReportData"
         v-model:show="showReportModal"
         :selected-steps="selectedSteps"
-        :comparison-images="reportData.comparisonImages"
-        :gif-url="reportData.gifUrl"
-        :metrics="reportData.metrics"
+        :comparison-images="fullReportData.comparisonImages"
+        :gif-url="fullReportData.gifUrl"
+        :metrics="fullReportData.metrics"
+        :pdf-url="fullReportData.pdfUrl"
     />
   </div>
 </template>
@@ -58,6 +67,8 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { useMessage } from 'naive-ui';
 import { processImageWithMetadata, listAvailableModels, fetchModelParameters } from '@/services/apiService.js';
+import { fetchReportData } from '@/services/reportService.js'; // 导入新的 service
+
 
 // Component Imports
 import ImageUploadPlaceholder from '@/components/ImageUploadPlaceholder.vue';
@@ -82,6 +93,9 @@ const { fileInputRef, uploadedFile, isImageUploaded, imageUrl, handleUploadClick
 const { isDragging } = useDragAndDrop(processAndSetFile);
 const { resetTransform } = useImageTransform();
 
+
+
+
 // Real API call state
 const displayState = ref('single');
 const isLoading = ref(false);
@@ -94,9 +108,14 @@ const selectedModel = ref(null); // Default to null, will be set on load
 const selectedSteps = ref([]);
 const advancedSettings = ref({});
 
-// Report
-const { showReportModal, openReport, reportData } = useReport(displayState, imageUrl, resultImageUrl);
 
+
+
+// Report
+// const { showReportModal, openReport, reportData } = useReport(displayState, imageUrl, resultImageUrl);
+
+const showReportModal = ref(false); // ✨ 2. 直接在这里管理模态框状态
+const fullReportData = ref(null);   // ✨ 3. 新增 ref 用于存储报告数据
 
 // --- Core Logic ---
 const handleSend = async (promptText) => {
@@ -109,6 +128,7 @@ const handleSend = async (promptText) => {
 
   isLoading.value = true;
   displayState.value = 'processing';
+  fullReportData.value = null; // 重置旧报告
   const loadingMessage = message.loading('正在处理请求...', { duration: 0 });
 
   try {
@@ -121,14 +141,25 @@ const handleSend = async (promptText) => {
 
     const metadata = { parameters: fullParameters };
 
-    const response = await processImageWithMetadata(uploadedFile.value, metadata);
+    // const response = await processImageWithMetadata(uploadedFile.value, metadata);
+    const processResponse = await processImageWithMetadata(uploadedFile.value, metadata);
 
-    if (response?.status === 'success') {
-      resultImageUrl.value = response.processed_image_url;
+    if (processResponse?.status === 'success') {
+      resultImageUrl.value = processResponse.processed_image_url;
       displayState.value = 'result';
-      message.success(`处理成功！耗时: ${response.processing_time}`);
+      message.success(`处理成功！耗时: ${processResponse.processing_time}`);
+
+      // ✨ 4. 立即获取详细报告
+      const reportInfo = {
+        report_id: processResponse.report_id,
+        original_filename: processResponse.original_filename,
+        processed_filename: processResponse.processed_filename,
+        parameters: processResponse.parameters
+      };
+      fullReportData.value = await fetchReportData(reportInfo);
+
     } else {
-      throw new Error(response?.error || '后端返回了失败状态。');
+      throw new Error(processResponse?.error || '后端返回了失败状态。');
     }
   } catch (err) {
     message.error(err.error || err.message || '发生未知错误。');
@@ -138,6 +169,31 @@ const handleSend = async (promptText) => {
     isLoading.value = false;
   }
 };
+
+//     if (response?.status === 'success') {
+//       resultImageUrl.value = response.processed_image_url;
+//       displayState.value = 'result';
+//       message.success(`处理成功！耗时: ${response.processing_time}`);
+//     } else {
+//       throw new Error(response?.error || '后端返回了失败状态。');
+//     }
+//   } catch (err) {
+//     message.error(err.error || err.message || '发生未知错误。');
+//     displayState.value = 'single';
+//   } finally {
+//     loadingMessage.destroy();
+//     isLoading.value = false;
+//   }
+// };
+
+// ✨ 5. 打开报告的逻辑
+const openReport = () => {
+  if (!fullReportData.value) {
+    message.warning('报告数据仍在加载中或加载失败，请稍候。');
+    return;
+  }
+  showReportModal.value = true;
+}
 
 // --- Watchers & Lifecycle ---
 watch(isImageUploaded, (isNew) => {

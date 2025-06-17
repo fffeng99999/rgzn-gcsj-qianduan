@@ -17,6 +17,7 @@
         :comparison-images="comparisonImages"
         :gif-url="gifUrl"
         :metrics="metrics"
+        :pdf-url="pdfUrl"
     />
   </n-modal>
 </template>
@@ -47,6 +48,10 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
+  pdfUrl: {
+    type: String,
+    default: ''
+  }
 });
 
 // 定义 emit 事件，用于 v-model:show 的双向绑定

@@ -34,13 +34,26 @@
       </n-tab-pane>
     </n-tabs>
     <n-divider />
+<!--    <n-h6>下载选项</n-h6>-->
+<!--    <n-space>-->
+<!--      <n-button v-if="selectedSteps.includes('step1')">下载 Step1 结果</n-button>-->
+<!--      <n-button v-if="selectedSteps.includes('step2')">下载 Step2 结果</n-button>-->
+<!--      <n-button v-if="selectedSteps.includes('step3')">下载 Step3 结果</n-button>-->
+<!--      <n-button>下载 GIF 动画</n-button>-->
+<!--      <n-button>下载指标报告</n-button>-->
+<!--    </n-space>-->
     <n-h6>下载选项</n-h6>
     <n-space>
-      <n-button v-if="selectedSteps.includes('step1')">下载 Step1 结果</n-button>
-      <n-button v-if="selectedSteps.includes('step2')">下载 Step2 结果</n-button>
-      <n-button v-if="selectedSteps.includes('step3')">下载 Step3 结果</n-button>
-      <n-button>下载 GIF 动画</n-button>
-      <n-button>下载指标报告</n-button>
+      <n-button
+          v-for="image in filteredComparisonImages.filter(img => !img.label.includes('原始'))"
+          :key="image.label"
+          @click="downloadFile(image.url, `${image.label}.png`)"
+      >
+        下载 {{ image.label }}
+      </n-button>
+
+      <n-button @click="downloadFile(gifUrl, 'animation.gif')">下载 GIF 动画</n-button>
+      <n-button @click="downloadFile(pdfUrl, 'report.pdf')">下载PDF报告</n-button>
     </n-space>
   </n-card>
 </template>
@@ -54,11 +67,24 @@ const props = defineProps({
   comparisonImages: Array,
   gifUrl: String,
   metrics: Object,
+  pdfUrl: String,
   selectedSteps: {
     type: Array,
     default: () => []
   }
 });
+
+
+const downloadFile = (url, filename) => {
+  if (!url) return;
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
 // ✨ 1. 创建计算属性，用于过滤要显示的对比图像
 const filteredComparisonImages = computed(() => {

@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify, send_file, current_app, url_for
 from werkzeug.utils import secure_filename
 import utils  # 导入我们的工具函数
 import logger  # 导入新的 logger 模块
+import report_generator
 
 # 创建一个蓝图对象 (从 'api' 修改为 'main')
 main = Blueprint('main', __name__)
@@ -63,11 +64,22 @@ def process_image_api():
         if not output_filename:
             return jsonify({'error': '服务器图像处理失败，请检查日志。'}), 500
 
+        # return jsonify({
+        #     'status': 'success',
+        #     'processing_time': f"{duration:.2f}秒",
+        #     'original_image_url': get_image_url(unique_filename, "uploads"),
+        #     'processed_image_url': get_image_url(output_filename, "processed")
+        # })
+
         return jsonify({
             'status': 'success',
             'processing_time': f"{duration:.2f}秒",
             'original_image_url': get_image_url(unique_filename, "uploads"),
-            'processed_image_url': get_image_url(output_filename, "processed")
+            'processed_image_url': get_image_url(output_filename, "processed"),
+            'report_id': unique_id,  # ✨ 新增：返回报告ID
+            'original_filename': unique_filename, # ✨ 新增：传递原始文件名
+            'processed_filename': output_filename, # ✨ 新增：传递处理后文件名
+            'parameters': parameters # ✨ 新增：传递处理参数
         })
 
     except Exception as e:
@@ -144,3 +156,35 @@ def list_models():
         # logger.error(f"列出模型时发生错误: {e}")
         print(traceback.format_exc()) # 打印完整的堆栈跟踪以便调试
         return jsonify({"error": "Internal server error"}), 500
+
+
+# --- NEW ROUTE: Fetch Report Data ---
+@main.route('/get-report', methods=['POST'])
+def get_report_data():
+    """根据报告ID和其他信息生成并返回详细报告数据。"""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    report_id = data.get('report_id')
+    original_filename = data.get('original_filename')
+    processed_filename = data.get('processed_filename')
+    parameters = data.get('parameters')
+
+    if not all([report_id, original_filename, processed_filename, parameters]):
+        return jsonify({"error": "Missing required data for report generation"}), 400
+
+    try:
+        # 调用独立的报告生成器
+        report_data = report_generator.generate_report_data(
+            report_id,
+            original_filename,
+            processed_filename,
+            parameters
+        )
+        return jsonify(report_data)
+    except Exception as e:
+        print(f"生成报告时出错: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": "Failed to generate report"}), 500
