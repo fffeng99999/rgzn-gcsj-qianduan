@@ -8,7 +8,7 @@
         <n-space justify="space-around">
           <div class="image-container" v-for="image in filteredComparisonImages" :key="image.label">
             <n-h6>{{ image.label }}</n-h6>
-            <n-image width="200" :src="image.src" />
+            <n-image width="200" :src="image.url" />
           </div>
         </n-space>
       </n-tab-pane>
@@ -22,13 +22,13 @@
         <n-p depth="3">图像增强质量的量化评估指标。</n-p>
         <n-descriptions label-placement="left" bordered :column="1">
           <n-descriptions-item label="PSNR (峰值信噪比)">
-            {{ metrics.psnr }} dB
+            {{ metrics['PSNR (峰值信噪比)'] }}
           </n-descriptions-item>
           <n-descriptions-item label="SSIM (结构相似性指数)">
-            {{ metrics.ssim }}
+            {{ metrics['SSIM (结构相似性指数)'] }}
           </n-descriptions-item>
           <n-descriptions-item label="CLIP-SCORE (语义相似度得分)">
-            {{ metrics.clipScore }}
+            {{ metrics['CLIP-SCORE (语义相似度得分)'] }}
           </n-descriptions-item>
         </n-descriptions>
       </n-tab-pane>
@@ -80,6 +80,8 @@ const filteredComparisonImages = computed(() => {
       return true;
     }
     // 根据 selectedSteps 动态显示对应的步骤结果
+    // 关键修改 #1 的补充：这里的 image 对象同时拥有了 src 和 url 属性，均指向同一个地址，确保无论是显示还是下载都能正确工作。
+    // 在本文件中，我们将图片显示的 src 改为 url，因此不再需要 src 属性。
     if (image.label.includes('Step 1') && props.selectedSteps.includes('step1')) {
       return true;
     }
