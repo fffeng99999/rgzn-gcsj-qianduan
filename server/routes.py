@@ -10,7 +10,7 @@ import utils  # 导入我们的工具函数
 import logger  # 导入新的 logger 模块
 import report_generator
 
-# 创建一个蓝图对象 (从 'api' 修改为 'main')
+# 创建一个蓝图对象
 main = Blueprint('main', __name__)
 
 def get_image_url(filename, folder):

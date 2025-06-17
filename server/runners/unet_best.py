@@ -1,4 +1,4 @@
-# /server/model_runners/unet_best.py
+# /server/runners/unet_best.py
 
 import argparse
 import json

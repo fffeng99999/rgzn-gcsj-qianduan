@@ -43,7 +43,7 @@ def process_image_with_params(input_path, metadata):
         # 2. 清理模型名称以防范路径遍历攻击，并构建启动器脚本的路径
         secure_model_name = secure_filename(model_name)
         runner_script_name = f"{secure_model_name}.py"
-        runner_script_path = os.path.join(config.BASE_DIR, 'model_runners', runner_script_name)
+        runner_script_path = os.path.join(config.BASE_DIR, 'runners', runner_script_name)
 
         if not os.path.exists(runner_script_path):
             print(f"错误: 找不到模型启动器脚本: {runner_script_path}")

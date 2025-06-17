@@ -34,35 +34,26 @@
       </n-tab-pane>
     </n-tabs>
     <n-divider />
-<!--    <n-h6>下载选项</n-h6>-->
-<!--    <n-space>-->
-<!--      <n-button v-if="selectedSteps.includes('step1')">下载 Step1 结果</n-button>-->
-<!--      <n-button v-if="selectedSteps.includes('step2')">下载 Step2 结果</n-button>-->
-<!--      <n-button v-if="selectedSteps.includes('step3')">下载 Step3 结果</n-button>-->
-<!--      <n-button>下载 GIF 动画</n-button>-->
-<!--      <n-button>下载指标报告</n-button>-->
-<!--    </n-space>-->
     <n-h6>下载选项</n-h6>
     <n-space>
       <n-button
           v-for="image in filteredComparisonImages.filter(img => !img.label.includes('原始'))"
           :key="image.label"
-          @click="downloadFile(image.url, `${image.label}.png`)"
+          @click="openInNewTab(image.url)"
       >
         下载 {{ image.label }}
       </n-button>
 
-      <n-button @click="downloadFile(gifUrl, 'animation.gif')">下载 GIF 动画</n-button>
-      <n-button @click="downloadFile(pdfUrl, 'report.pdf')">下载PDF报告</n-button>
+      <n-button @click="openInNewTab(gifUrl)">下载 GIF 动画</n-button>
+      <n-button @click="openInNewTab(pdfUrl)">下载PDF报告</n-button>
     </n-space>
   </n-card>
 </template>
 
 <script setup>
-import { computed } from 'vue'; // ✨ 1. 引入 computed
+import { computed } from 'vue';
 import { NCard, NP, NH6, NTabs, NTabPane, NSpace, NImage, NDivider, NButton, NDescriptions, NDescriptionsItem } from 'naive-ui';
 
-// ✨ 1. 修改 props，增加 selectedSteps 用于接收父组件传递的选择状态
 const props = defineProps({
   comparisonImages: Array,
   gifUrl: String,
@@ -74,19 +65,12 @@ const props = defineProps({
   }
 });
 
-
-const downloadFile = (url, filename) => {
+// 修改下载方法，使其在新标签页中打开
+const openInNewTab = (url) => {
   if (!url) return;
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  window.open(url, '_blank');
 };
 
-
-// ✨ 1. 创建计算属性，用于过滤要显示的对比图像
 const filteredComparisonImages = computed(() => {
   if (!props.comparisonImages) return [];
 

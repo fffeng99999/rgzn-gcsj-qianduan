@@ -81,7 +81,7 @@ def generate_pdf_report(output_path, metrics, params):
     # 请下载字体文件并放置在 server/ 目录下
     try:
         # 构建字体的绝对路径
-        font_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'simsun.ttf')
+        font_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'assets', 'simsun.ttf')
         print(f"--- [调试] 正在加载字体文件于: {font_path}")
 
         # 在 add_font 方法中使用完整的字体路径

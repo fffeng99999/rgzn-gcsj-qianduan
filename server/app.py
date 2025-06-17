@@ -6,7 +6,7 @@ import os
 from flask import Flask
 from flask_cors import CORS
 import config       # 导入配置
-from routes import main  # 从 'routes' 导入蓝图 (从 'api' 修改为 'main')
+from routes import main  # 从 'routes' 导入蓝图
 
 def create_app():
     """创建并配置Flask应用。"""
